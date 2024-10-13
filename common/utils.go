@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -26,4 +27,18 @@ func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
 	grid.ElementsNumber = globalData.ElementsNumber
 
 	return grid, globalData, nil
+}
+
+var Points = map[int]struct {
+	Coords  []float64
+	Weights []float64
+}{
+	2: {
+		Coords:  []float64{-math.Sqrt(1.0 / 3.0), math.Sqrt(1.0 / 3.0)},
+		Weights: []float64{1, 1},
+	},
+	3: {
+		Coords:  []float64{-math.Sqrt(3.0 / 5.0), 0, math.Sqrt(3.0 / 5.0)},
+		Weights: []float64{5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0},
+	},
 }
