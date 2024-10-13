@@ -1,62 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"strconv"
+
+	c "mes/common"
 )
 
-func readFromFile(file *os.File) (grid Grid, globalData GlobalData) {
-	scanner := bufio.NewScanner(file)
-
-	fields := []*int{
-		&globalData.simulationTime,
-		&globalData.simulationStepTime,
-		&globalData.conductivity,
-		&globalData.alfa,
-		&globalData.ambientTemperature,
-		&globalData.initialTemperature,
-		&globalData.density,
-		&globalData.specificHeat,
-		&globalData.nodesNumber,
-		&globalData.elementsNumber,
-		&grid.height,
-		&grid.width,
-		&grid.numberHeight,
-		&grid.numberWidth,
-	}
-
-	i := 0
-	for scanner.Scan() {
-		if i >= len(fields) {
-			fmt.Printf("Error: more lines in file than expected")
-			return Grid{}, GlobalData{}
-		}
-
-		line := scanner.Text()
-		val, err := strconv.Atoi(line)
-		if err != nil {
-			fmt.Printf("Error converting line to int: %v", err)
-			return Grid{}, GlobalData{}
-		}
-
-		*fields[i] = val
-		i++
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Printf("Error reading file: %v", err)
-	}
-
-	grid.elementsNumber = globalData.elementsNumber
-	grid.nodesNumber = globalData.nodesNumber
-
-	return grid, globalData
-}
-
-func generateElements(numberWidth, numberHeight, elementsNumber int) []Element {
-	elements := make([]Element, elementsNumber)
+func generateElements(numberWidth, numberHeight, elementsNumber int) []c.Element {
+	elements := make([]c.Element, elementsNumber)
 
 	for i := 0; i < numberHeight; i++ {
 		for j := 0; j < numberWidth; j++ {
@@ -66,31 +18,26 @@ func generateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 				(i+1)*(numberWidth+1) + j + 2,
 				(i+1)*(numberWidth+1) + j + 1,
 			}
-			fmt.Printf("ids: %v\n", ids)
 
-			elements[i*numberWidth+j] = Element{ids}
+			elements[i*numberWidth+j] = c.Element{Ids: ids}
 		}
 	}
 
 	return elements
 }
 
-func generateNodes(width, height, numW, numH, nodesNumber int) []Node {
+func generateNodes(width, height, numW, numH, nodesNumber int) []c.Node {
 	elementHeight := height / numH
 	elementWidth := width / numW
 
-	nodes := make([]Node, nodesNumber)
+	nodes := make([]c.Node, nodesNumber)
 
 	for i := 0; i <= numW; i++ {
 		for j := 0; j <= numH; j++ {
-			node := Node{
-				float64(i * elementWidth),
-				float64(j * elementHeight),
+			node := c.Node{
+				X: float64(i * elementWidth),
+				Y: float64(j * elementHeight),
 			}
-
-			fmt.Printf("i: %v\n", i)
-			fmt.Printf("j: %v\n", j)
-			fmt.Printf("Node: %v\n", node)
 
 			nodes[i*(numH+1)+j] = node
 		}
@@ -100,17 +47,22 @@ func generateNodes(width, height, numW, numH, nodesNumber int) []Node {
 }
 
 func main() {
-	file, err := os.Open("task.txt")
+	file, err := os.Open("data.json")
 	if err != nil {
 		fmt.Println("Error opening file: ", err)
 		return
 	}
 	defer file.Close()
 
-	grid, globalData := readFromFile(file)
-	grid.elements = generateElements(grid.numberWidth, grid.numberHeight, grid.elementsNumber)
-	grid.nodes = generateNodes(grid.width, grid.height, grid.numberWidth, grid.numberHeight, grid.nodesNumber)
+	grid, globalData, err := c.ReadFromFile(file)
+	if err != nil {
+		fmt.Println("Error reading from file: ", err)
+		return
+	}
 
-	fmt.Printf("Grid: %v\n", grid)
+	grid.Elements = generateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber)
+	grid.Nodes = generateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
+
 	fmt.Printf("GlobalData: %v\n", globalData)
+	fmt.Printf("Grid: %v\n", grid)
 }
