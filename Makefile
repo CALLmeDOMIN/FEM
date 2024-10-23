@@ -1,7 +1,8 @@
-.PHONY: run-l1 run-l2
+.PHONY: run
 
-run-l1:
-	$(MAKE) -C 1 run
+run:
+	@go run $(wildcard *.go)
 
-run-l2:
-	$(MAKE) -C 2 run
+.PHONY: clean
+clean:
+	@rm -f $(wildcard *.out)

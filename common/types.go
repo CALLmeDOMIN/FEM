@@ -6,7 +6,11 @@ type Node struct {
 }
 
 type Element struct {
-	Ids []int
+	Ids    []int
+	Ksi    []float64
+	Eta    []float64
+	DNdKsi [][]float64
+	DNdEta [][]float64
 }
 
 type Grid struct {
