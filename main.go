@@ -22,16 +22,10 @@ func main() {
 		return
 	}
 
-	integrationPoints := 3
-
-	grid.Nodes = c.GenerateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
-
 	nodeMap := make(map[int]c.Node)
 	for i, node := range grid.Nodes {
 		nodeMap[i+1] = node
 	}
-
-	grid.Elements = c.GenerateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber, integrationPoints)
 
 	for _, element := range grid.Elements {
 		jacobians := i.CalculateJacobian(element, nodeMap)

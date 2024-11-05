@@ -42,6 +42,23 @@ func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
 	grid.NodesNumber = globalData.NodesNumber
 	grid.ElementsNumber = globalData.ElementsNumber
 
+	if len(grid.Nodes) == 0 {
+		grid.Nodes = GenerateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
+	}
+
+	nodeMap := make(map[int]Node)
+	for _, node := range grid.Nodes {
+		nodeMap[node.Id] = node
+	}
+
+	integrationPoints := 3
+
+	if len(grid.Elements) == 0 {
+		grid.Elements = GenerateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber)
+	}
+
+	grid.Elements = GenerateShapeFunctionData(grid.Elements, grid.NumberWidth, grid.NumberHeight, integrationPoints)
+
 	return grid, globalData, nil
 }
 
