@@ -48,7 +48,7 @@ func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
 
 	nodeMap := make(map[int]Node)
 	for _, node := range grid.Nodes {
-		nodeMap[node.Id] = node
+		nodeMap[node.ID] = node
 	}
 
 	integrationPoints := 3

@@ -1,14 +1,14 @@
 package common
 
 type Node struct {
-	Id int     `json:"id"`
+	ID int     `json:"id"`
 	X  float64 `json:"x"`
 	Y  float64 `json:"y"`
 }
 
 type Element struct {
-	Id     int   `json:"id"`
-	Ids    []int `json:"nodes"`
+	ID     int   `json:"id"`
+	IDs    []int `json:"nodes"`
 	Ksi    []float64
 	Eta    []float64
 	DNdKsi [][]float64
@@ -27,14 +27,14 @@ type Grid struct {
 }
 
 type GlobalData struct {
-	SimulationTime     int `json:"simulationTime"`
-	SimulationStepTime int `json:"simulationStepTime"`
-	Conductivity       int `json:"conductivity"`
-	Alfa               int `json:"alfa"`
-	AmbientTemperature int `json:"ambientTemperature"`
-	InitialTemperature int `json:"initialTemperature"`
-	Density            int `json:"density"`
-	SpecificHeat       int `json:"specificHeat"`
-	NodesNumber        int `json:"nodesNumber"`
-	ElementsNumber     int `json:"elementsNumber"`
+	SimulationTime     int     `json:"simulationTime"`
+	SimulationStepTime int     `json:"simulationStepTime"`
+	Conductivity       float64 `json:"conductivity"`
+	Alfa               int     `json:"alfa"`
+	AmbientTemperature float64 `json:"ambientTemperature"`
+	InitialTemperature float64 `json:"initialTemperature"`
+	Density            float64 `json:"density"`
+	SpecificHeat       float64 `json:"specificHeat"`
+	NodesNumber        int     `json:"nodesNumber"`
+	ElementsNumber     int     `json:"elementsNumber"`
 }

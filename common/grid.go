@@ -33,7 +33,7 @@ func GenerateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 			}
 
 			elements[i*numberWidth+j] = Element{
-				Ids: ids,
+				IDs: ids,
 			}
 		}
 	}
@@ -76,10 +76,10 @@ func GenerateShapeFunctionData(elements []Element, numberWidth, numberHeight, po
 
 	for i := 0; i < numberHeight; i++ {
 		for j := 0; j < numberWidth; j++ {
-			Ids_copy := elements[i*numberWidth+j].Ids
+			IDs_copy := elements[i*numberWidth+j].IDs
 
 			elements[i*numberWidth+j] = Element{
-				Ids:    Ids_copy,
+				IDs:    IDs_copy,
 				Ksi:    ksi,
 				Eta:    eta,
 				DNdKsi: dNdKsi,

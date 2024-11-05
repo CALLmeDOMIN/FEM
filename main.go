@@ -29,15 +29,19 @@ func main() {
 
 	for _, element := range grid.Elements {
 		jacobians := i.CalculateJacobian(element, nodeMap)
-		fmt.Printf("Jacobians for element %v:\n", element.Ids)
+		fmt.Printf("Jacobians for element %v:\n", element.IDs)
 		c.PrintMatrixArray(jacobians)
 
 		dets := i.CalculateDetJacobian(jacobians)
-		fmt.Printf("Determinants for element %v: %v\n", element.Ids, dets)
+		fmt.Printf("Determinants for element %v: %v\n", element.IDs, dets)
 
 		inverses := i.CalculateReverseJacobian(jacobians)
-		fmt.Printf("Inverse Jacobians for element %v:\n", element.Ids)
+		fmt.Printf("Inverse Jacobians for element %v:\n", element.IDs)
 		c.PrintMatrixArray(inverses)
+
+		H := i.CalculateHMatrix(element, nodeMap, globalData.Conductivity)
+		fmt.Printf("H matrix for element %v:\n", element.IDs)
+		c.PrintMatrix(H)
 	}
 
 	fmt.Printf("GlobalData: %v\n", globalData)

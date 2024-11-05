@@ -8,6 +8,26 @@ import (
 	c "mes/common"
 )
 
+func CalculateHMatrix(element c.Element, nodeMap map[int]c.Node, conductivity float64) *mat.Dense {
+	points := len(element.Ksi)
+	H := mat.NewDense(len(element.IDs), len(element.IDs), nil)
+
+	jacobians := CalculateJacobian(element, nodeMap)
+	dets := CalculateDetJacobian(jacobians)
+
+	for i := 0; i < points; i++ {
+		detJ := dets[i]
+
+		for m := 0; m < 4; m++ {
+			for n := 0; n < 4; n++ {
+				H.Set(m, n, H.At(m, n)+conductivity*detJ*(element.DNdKsi[i][m]*element.DNdKsi[i][n]+element.DNdEta[i][m]*element.DNdEta[i][n]))
+			}
+		}
+	}
+
+	return H
+}
+
 func CalculateJacobian(element c.Element, nodeMap map[int]c.Node) []*mat.Dense {
 	jacobians := make([]*mat.Dense, 0)
 
@@ -15,7 +35,7 @@ func CalculateJacobian(element c.Element, nodeMap map[int]c.Node) []*mat.Dense {
 		jacobian := mat.NewDense(2, 2, nil)
 
 		for j := 0; j < 4; j++ {
-			nodeID := element.Ids[j]
+			nodeID := element.IDs[j]
 			x, y := nodeMap[nodeID].X, nodeMap[nodeID].Y
 
 			jacobian.Set(0, 0, jacobian.At(0, 0)+element.DNdKsi[i][j]*x)
