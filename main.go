@@ -18,11 +18,13 @@ func main() {
 
 	integrationPoints := 3
 
-	grid, globalData, err := c.ReadFromFile(file, integrationPoints)
+	gridFile, globalDataFile, err := c.ReadFromFile(file)
 	if err != nil {
 		fmt.Println("Error reading from file: ", err)
 		return
 	}
+
+	grid, globalData := c.GenerateGrid(globalDataFile, gridFile, integrationPoints)
 
 	fmt.Printf("GlobalData: %v\n", globalData)
 	fmt.Printf("Grid: %v\n", grid)

@@ -23,7 +23,7 @@ var Points = map[int]struct {
 	},
 }
 
-func ReadFromFile(file *os.File, integrationPoints int) (Grid, GlobalData, error) {
+func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
 	var grid Grid
 	var globalData GlobalData
 
@@ -38,24 +38,6 @@ func ReadFromFile(file *os.File, integrationPoints int) (Grid, GlobalData, error
 	if err != nil {
 		return Grid{}, GlobalData{}, fmt.Errorf("error decoding file: %v", err)
 	}
-
-	grid.NodesNumber = globalData.NodesNumber
-	grid.ElementsNumber = globalData.ElementsNumber
-
-	if len(grid.Nodes) == 0 {
-		grid.Nodes = GenerateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
-	}
-
-	nodeMap := make(map[int]Node)
-	for _, node := range grid.Nodes {
-		nodeMap[node.ID] = node
-	}
-
-	if len(grid.Elements) == 0 {
-		grid.Elements = GenerateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber)
-	}
-
-	grid.Elements = GenerateShapeFunctionData(grid.Elements, grid.NumberWidth, grid.NumberHeight, integrationPoints)
 
 	return grid, globalData, nil
 }

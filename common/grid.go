@@ -1,6 +1,28 @@
 package common
 
-func GenerateNodes(width, height float64, numW, numH, nodesNumber int) []Node {
+func GenerateGrid(globalData GlobalData, grid Grid, integrationPoints int) (Grid, GlobalData) {
+	grid.NodesNumber = globalData.NodesNumber
+	grid.ElementsNumber = globalData.ElementsNumber
+
+	if len(grid.Nodes) == 0 {
+		grid.Nodes = generateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
+	}
+
+	nodeMap := make(map[int]Node)
+	for _, node := range grid.Nodes {
+		nodeMap[node.ID] = node
+	}
+
+	if len(grid.Elements) == 0 {
+		grid.Elements = generateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber)
+	}
+
+	grid.Elements = generateShapeFunctionData(grid.Elements, grid.NumberWidth, grid.NumberHeight, integrationPoints)
+
+	return grid, globalData
+}
+
+func generateNodes(width, height float64, numW, numH, nodesNumber int) []Node {
 	elementHeight := height / float64(numH)
 	elementWidth := width / float64(numW)
 
@@ -20,7 +42,7 @@ func GenerateNodes(width, height float64, numW, numH, nodesNumber int) []Node {
 	return nodes
 }
 
-func GenerateElements(numberWidth, numberHeight, elementsNumber int) []Element {
+func generateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 	elements := make([]Element, elementsNumber)
 
 	for i := 0; i < numberHeight; i++ {
@@ -41,7 +63,7 @@ func GenerateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 	return elements
 }
 
-func GenerateShapeFunctionData(elements []Element, numberWidth, numberHeight, points int) []Element {
+func generateShapeFunctionData(elements []Element, numberWidth, numberHeight, points int) []Element {
 	ksi := make([]float64, points*points)
 	eta := make([]float64, points*points)
 
