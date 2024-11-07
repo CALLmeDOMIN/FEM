@@ -42,18 +42,19 @@ func GenerateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 }
 
 func GenerateShapeFunctionData(elements []Element, numberWidth, numberHeight, points int) []Element {
-	ksi := make([]float64, points)
-	eta := make([]float64, points)
+	ksi := make([]float64, points*points)
+	eta := make([]float64, points*points)
 
 	for i := 0; i < points; i++ {
 		for j := 0; j < points; j++ {
-			ksi[i] = Points[points].Coords[i]
-			eta[i] = Points[points].Coords[i]
+			index := i*points + j
+			ksi[index] = Points[points].Coords[j]
+			eta[index] = Points[points].Coords[i]
 		}
 	}
 
-	dNdKsi := make([][]float64, points)
-	dNdEta := make([][]float64, points)
+	dNdKsi := make([][]float64, points*points)
+	dNdEta := make([][]float64, points*points)
 
 	for i := 0; i < len(ksi); i++ {
 		ksiValue := ksi[i]

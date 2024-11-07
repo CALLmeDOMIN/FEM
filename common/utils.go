@@ -23,7 +23,7 @@ var Points = map[int]struct {
 	},
 }
 
-func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
+func ReadFromFile(file *os.File, integrationPoints int) (Grid, GlobalData, error) {
 	var grid Grid
 	var globalData GlobalData
 
@@ -50,8 +50,6 @@ func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
 	for _, node := range grid.Nodes {
 		nodeMap[node.ID] = node
 	}
-
-	integrationPoints := 3
 
 	if len(grid.Elements) == 0 {
 		grid.Elements = GenerateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber)
