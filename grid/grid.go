@@ -1,6 +1,8 @@
-package common
+package grid
 
-func GenerateGrid(globalData GlobalData, grid Grid, integrationPoints int) (Grid, GlobalData) {
+import c "mes/common"
+
+func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (c.Grid, c.GlobalData) {
 	grid.NodesNumber = globalData.NodesNumber
 	grid.ElementsNumber = globalData.ElementsNumber
 
@@ -8,10 +10,11 @@ func GenerateGrid(globalData GlobalData, grid Grid, integrationPoints int) (Grid
 		grid.Nodes = generateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
 	}
 
-	nodeMap := make(map[int]Node)
+	nodeMap := make(map[int]c.Node)
 	for _, node := range grid.Nodes {
 		nodeMap[node.ID] = node
 	}
+	grid.NodeMap = nodeMap
 
 	if len(grid.Elements) == 0 {
 		grid.Elements = generateElements(grid.NumberWidth, grid.NumberHeight, grid.ElementsNumber)
@@ -19,18 +22,24 @@ func GenerateGrid(globalData GlobalData, grid Grid, integrationPoints int) (Grid
 
 	grid.Elements = generateShapeFunctionData(grid.Elements, grid.NumberWidth, grid.NumberHeight, integrationPoints)
 
+	for i, element := range grid.Elements {
+		grid.Elements[i].HMatrix = calculateHMatrix_local(element, nodeMap, globalData.Conductivity, integrationPoints)
+	}
+
+	grid.HMatrix = calculateHMatrix_global(grid)
+
 	return grid, globalData
 }
 
-func generateNodes(width, height float64, numW, numH, nodesNumber int) []Node {
+func generateNodes(width, height float64, numW, numH, nodesNumber int) []c.Node {
 	elementHeight := height / float64(numH)
 	elementWidth := width / float64(numW)
 
-	nodes := make([]Node, nodesNumber)
+	nodes := make([]c.Node, nodesNumber)
 
 	for i := 0; i <= numW; i++ {
 		for j := 0; j <= numH; j++ {
-			node := Node{
+			node := c.Node{
 				X: float64(i) * elementWidth,
 				Y: float64(j) * elementHeight,
 			}
@@ -42,8 +51,8 @@ func generateNodes(width, height float64, numW, numH, nodesNumber int) []Node {
 	return nodes
 }
 
-func generateElements(numberWidth, numberHeight, elementsNumber int) []Element {
-	elements := make([]Element, elementsNumber)
+func generateElements(numberWidth, numberHeight, elementsNumber int) []c.Element {
+	elements := make([]c.Element, elementsNumber)
 
 	for i := 0; i < numberHeight; i++ {
 		for j := 0; j < numberWidth; j++ {
@@ -54,7 +63,7 @@ func generateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 				(i+1)*(numberWidth+1) + j + 1,
 			}
 
-			elements[i*numberWidth+j] = Element{
+			elements[i*numberWidth+j] = c.Element{
 				IDs: ids,
 			}
 		}
@@ -63,15 +72,15 @@ func generateElements(numberWidth, numberHeight, elementsNumber int) []Element {
 	return elements
 }
 
-func generateShapeFunctionData(elements []Element, numberWidth, numberHeight, points int) []Element {
+func generateShapeFunctionData(elements []c.Element, numberWidth, numberHeight, points int) []c.Element {
 	ksi := make([]float64, points*points)
 	eta := make([]float64, points*points)
 
 	for i := 0; i < points; i++ {
 		for j := 0; j < points; j++ {
 			index := i*points + j
-			ksi[index] = Points[points].Coords[j]
-			eta[index] = Points[points].Coords[i]
+			ksi[index] = c.Points[points].Coords[j]
+			eta[index] = c.Points[points].Coords[i]
 		}
 	}
 
@@ -101,7 +110,7 @@ func generateShapeFunctionData(elements []Element, numberWidth, numberHeight, po
 		for j := 0; j < numberWidth; j++ {
 			IDs_copy := elements[i*numberWidth+j].IDs
 
-			elements[i*numberWidth+j] = Element{
+			elements[i*numberWidth+j] = c.Element{
 				IDs:    IDs_copy,
 				Ksi:    ksi,
 				Eta:    eta,

@@ -2,7 +2,7 @@
     "simulationTime": 500,
     "simulationStepTime": 50,
     "conductivity": 25,
-    "alfa": 300,
+    "alpha": 300,
     "ambientTemperature": 1200,
     "initialTemperature": 100,
     "density": 7800,
