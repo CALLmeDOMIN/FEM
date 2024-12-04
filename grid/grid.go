@@ -1,6 +1,10 @@
 package grid
 
-import c "mes/common"
+import (
+	"slices"
+
+	c "mes/common"
+)
 
 func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (c.Grid, c.GlobalData) {
 	grid.NodesNumber = globalData.NodesNumber
@@ -8,6 +12,12 @@ func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (
 
 	if len(grid.Nodes) == 0 {
 		grid.Nodes = generateNodes(grid.Width, grid.Height, grid.NumberWidth, grid.NumberHeight, grid.NodesNumber)
+	}
+
+	for i := range grid.Nodes {
+		if slices.Contains(grid.BCNodes, grid.Nodes[i].ID) {
+			grid.Nodes[i].BC = true
+		}
 	}
 
 	nodeMap := make(map[int]c.Node)
@@ -23,7 +33,7 @@ func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (
 	grid.Elements = generateShapeFunctionData(grid.Elements, grid.NumberWidth, grid.NumberHeight, integrationPoints)
 
 	for i, element := range grid.Elements {
-		grid.Elements[i].HMatrix = calculateHMatrix_local(element, nodeMap, globalData.Conductivity, integrationPoints)
+		grid.Elements[i].HMatrix = calculateHMatrix_local(element, nodeMap, globalData.Conductivity, globalData.Alpha, integrationPoints)
 	}
 
 	grid.HMatrix = calculateHMatrix_global(grid)
@@ -64,7 +74,7 @@ func generateElements(numberWidth, numberHeight, elementsNumber int) []c.Element
 			}
 
 			elements[i*numberWidth+j] = c.Element{
-				IDs: ids,
+				NodeIDs: ids,
 			}
 		}
 	}
@@ -108,14 +118,15 @@ func generateShapeFunctionData(elements []c.Element, numberWidth, numberHeight, 
 
 	for i := 0; i < numberHeight; i++ {
 		for j := 0; j < numberWidth; j++ {
-			IDs_copy := elements[i*numberWidth+j].IDs
+			IDs_copy := elements[i*numberWidth+j].NodeIDs
 
 			elements[i*numberWidth+j] = c.Element{
-				IDs:    IDs_copy,
-				Ksi:    ksi,
-				Eta:    eta,
-				DNdKsi: dNdKsi,
-				DNdEta: dNdEta,
+				ID:      i*numberWidth + j + 1,
+				NodeIDs: IDs_copy,
+				Ksi:     ksi,
+				Eta:     eta,
+				DNdKsi:  dNdKsi,
+				DNdEta:  dNdEta,
 			}
 		}
 	}

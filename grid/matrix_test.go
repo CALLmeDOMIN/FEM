@@ -10,6 +10,7 @@ import (
 
 func TestCalculateHMatrix(t *testing.T) {
 	const conductivity = 30.0
+	const alpha = 300.0
 
 	type tcData struct {
 		name    string
@@ -30,10 +31,10 @@ func TestCalculateHMatrix(t *testing.T) {
 			},
 			points: 3,
 			element: c.Element{
-				ID:  1,
-				IDs: []int{1, 2, 3, 4},
-				Ksi: []float64{-0.7745966692414834, 0, 0.7745966692414834, -0.7745966692414834, 0, 0.7745966692414834, -0.7745966692414834, 0, 0.7745966692414834},
-				Eta: []float64{-0.7745966692414834, -0.7745966692414834, -0.7745966692414834, 0, 0, 0, 0.7745966692414834, 0.7745966692414834, 0.7745966692414834},
+				ID:      1,
+				NodeIDs: []int{1, 2, 3, 4},
+				Ksi:     []float64{-0.7745966692414834, 0, 0.7745966692414834, -0.7745966692414834, 0, 0.7745966692414834, -0.7745966692414834, 0, 0.7745966692414834},
+				Eta:     []float64{-0.7745966692414834, -0.7745966692414834, -0.7745966692414834, 0, 0, 0, 0.7745966692414834, 0.7745966692414834, 0.7745966692414834},
 				DNdKsi: [][]float64{
 					{-0.44365, 0.44365, 0.05635, -0.0564},
 					{-0.25, 0.25, 0.25, -0.25},
@@ -74,9 +75,9 @@ func TestCalculateHMatrix(t *testing.T) {
 			},
 			points: 2,
 			element: c.Element{
-				IDs: []int{1, 2, 3, 4},
-				Ksi: []float64{-0.57735, 0.57735, 0.57735, -0.57735},
-				Eta: []float64{-0.57735, -0.57735, 0.57735, 0.57735},
+				NodeIDs: []int{1, 2, 3, 4},
+				Ksi:     []float64{-0.57735, 0.57735, 0.57735, -0.57735},
+				Eta:     []float64{-0.57735, -0.57735, 0.57735, 0.57735},
 				DNdKsi: [][]float64{
 					{-0.394338, 0.394338, 0.105662, -0.10566},
 					{-0.394338, 0.394338, 0.105662, -0.10566},
@@ -101,7 +102,7 @@ func TestCalculateHMatrix(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res := calculateHMatrix_local(tc.element, tc.nodeMap, conductivity, tc.points)
+			res := calculateHMatrix_local(tc.element, tc.nodeMap, conductivity, alpha, tc.points)
 
 			if !mat.EqualApprox(res, tc.result, 1e-2) {
 				t.Errorf("Expected %v, got %v", tc.result, res)

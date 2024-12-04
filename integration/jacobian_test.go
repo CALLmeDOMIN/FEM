@@ -28,7 +28,7 @@ func TestCalculateJacobian(t *testing.T) {
 			},
 			points: 1,
 			element: c.Element{
-				IDs: []int{1, 2, 3, 4},
+				NodeIDs: []int{1, 2, 3, 4},
 				DNdKsi: [][]float64{
 					{-0.39434, 0.394338, 0.105662, -0.10566},
 					{-0.39434, 0.394338, 0.105662, -0.10566},
@@ -56,7 +56,7 @@ func TestCalculateJacobian(t *testing.T) {
 			},
 			points: 1,
 			element: c.Element{
-				IDs: []int{1, 2, 3, 4},
+				NodeIDs: []int{1, 2, 3, 4},
 				DNdKsi: [][]float64{
 					{-0.394338, 0.394338, 0.105662, -0.10566},
 					{-0.394338, 0.394338, 0.105662, -0.10566},
@@ -78,7 +78,7 @@ func TestCalculateJacobian(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res := CalculateJacobian(tc.element, tc.nodeMap, tc.points)
+			res := CalculateJacobians(tc.element, tc.nodeMap, tc.points)
 
 			for i, j := range res {
 				if !mat.EqualApprox(j, tc.result[i], 1e-6) {

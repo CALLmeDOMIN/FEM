@@ -21,6 +21,10 @@ var Points = map[int]struct {
 		Coords:  []float64{-math.Sqrt(3.0 / 5.0), 0, math.Sqrt(3.0 / 5.0)},
 		Weights: []float64{5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0},
 	},
+	4: {
+		Coords:  []float64{-math.Sqrt(3.0 / 7.0), -math.Sqrt(5.0 / 7.0), math.Sqrt(5.0 / 7.0), math.Sqrt(3.0 / 7.0)},
+		Weights: []float64{(18.0 - math.Sqrt(30.0)) / 36.0, (18.0 + math.Sqrt(30.0)) / 36.0, (18.0 + math.Sqrt(30.0)) / 36.0, (18.0 - math.Sqrt(30.0)) / 36.0},
+	},
 }
 
 func PrintGlobalData(globalData GlobalData) {
@@ -51,7 +55,7 @@ func PrintGrid(grid Grid) {
 	fmt.Println("  Elements:")
 	for i, element := range grid.Elements {
 		fmt.Printf("\n    Element %v: \n", i)
-		fmt.Printf("      IDs: %v\n", element.IDs)
+		fmt.Printf("      IDs: %v\n", element.NodeIDs)
 		fmt.Printf("      Ksi: %v\n", element.Ksi)
 		fmt.Printf("      Eta: %v\n", element.Eta)
 		fmt.Printf("      DNdKsi: %v\n", element.DNdKsi)

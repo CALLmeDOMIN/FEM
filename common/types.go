@@ -6,16 +6,35 @@ type Node struct {
 	ID int     `json:"id"`
 	X  float64 `json:"x"`
 	Y  float64 `json:"y"`
+	BC bool
+}
+
+type Geometry interface {
+	GetIDs() []int
+	GetDNdKsi(point int) []float64
+	GetDNdEta(point int) []float64
 }
 
 type Element struct {
 	ID      int   `json:"id"`
-	IDs     []int `json:"nodes"`
+	NodeIDs []int `json:"nodes"`
 	Ksi     []float64
 	Eta     []float64
 	DNdKsi  [][]float64
 	DNdEta  [][]float64
 	HMatrix *mat.Dense
+}
+
+func (e Element) GetIDs() []int {
+	return e.NodeIDs
+}
+
+func (e Element) GetDNdKsi(point int) []float64 {
+	return e.DNdKsi[point]
+}
+
+func (e Element) GetDNdEta(point int) []float64 {
+	return e.DNdEta[point]
 }
 
 type Grid struct {
@@ -28,6 +47,7 @@ type Grid struct {
 	Height         float64 `json:"height"`
 	NumberHeight   int     `json:"numberHeight"`
 	NumberWidth    int     `json:"numberWidth"`
+	BCNodes        []int   `json:"bcNodes"`
 	HMatrix        *mat.Dense
 }
 
@@ -35,7 +55,7 @@ type GlobalData struct {
 	SimulationTime     int     `json:"simulationTime"`
 	SimulationStepTime int     `json:"simulationStepTime"`
 	Conductivity       float64 `json:"conductivity"`
-	Alpha              int     `json:"alfa"`
+	Alpha              float64 `json:"alpha"`
 	AmbientTemperature float64 `json:"ambientTemperature"`
 	InitialTemperature float64 `json:"initialTemperature"`
 	Density            float64 `json:"density"`

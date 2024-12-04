@@ -8,20 +8,20 @@ import (
 	c "mes/common"
 )
 
-func CalculateJacobian(element c.Element, nodeMap map[int]c.Node, points int) []*mat.Dense {
+func CalculateJacobians(geometry c.Geometry, nodeMap map[int]c.Node, points int) []*mat.Dense {
 	jacobians := make([]*mat.Dense, 0)
 
 	for i := 0; i < points*points; i++ {
 		jacobian := mat.NewDense(2, 2, nil)
 
 		for j := 0; j < 4; j++ {
-			nodeID := element.IDs[j]
+			nodeID := geometry.GetIDs()[j]
 			x, y := nodeMap[nodeID].X, nodeMap[nodeID].Y
 
-			jacobian.Set(0, 0, jacobian.At(0, 0)+element.DNdKsi[i][j]*x)
-			jacobian.Set(0, 1, jacobian.At(0, 1)+element.DNdKsi[i][j]*y)
-			jacobian.Set(1, 0, jacobian.At(1, 0)+element.DNdEta[i][j]*x)
-			jacobian.Set(1, 1, jacobian.At(1, 1)+element.DNdEta[i][j]*y)
+			jacobian.Set(0, 0, jacobian.At(0, 0)+geometry.GetDNdKsi(i)[j]*x)
+			jacobian.Set(0, 1, jacobian.At(0, 1)+geometry.GetDNdKsi(i)[j]*y)
+			jacobian.Set(1, 0, jacobian.At(1, 0)+geometry.GetDNdEta(i)[j]*x)
+			jacobian.Set(1, 1, jacobian.At(1, 1)+geometry.GetDNdEta(i)[j]*y)
 		}
 
 		jacobians = append(jacobians, jacobian)
@@ -30,7 +30,7 @@ func CalculateJacobian(element c.Element, nodeMap map[int]c.Node, points int) []
 	return jacobians
 }
 
-func CalculateDetJacobian(jacobians []*mat.Dense) []float64 {
+func CalculateDetJacobians(jacobians []*mat.Dense) []float64 {
 	dets := make([]float64, 0)
 
 	for _, jacobian := range jacobians {
@@ -40,7 +40,7 @@ func CalculateDetJacobian(jacobians []*mat.Dense) []float64 {
 	return dets
 }
 
-func CalculateReverseJacobian(jacobians []*mat.Dense) []*mat.Dense {
+func CalculateReverseJacobians(jacobians []*mat.Dense) []*mat.Dense {
 	inverses := make([]*mat.Dense, 0)
 
 	for _, jacobian := range jacobians {
