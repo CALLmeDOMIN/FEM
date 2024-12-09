@@ -62,6 +62,8 @@ func PrintGrid(grid Grid) {
 		fmt.Printf("      DNdEta: %v\n", element.DNdEta)
 		fmt.Printf("      HMatrix: \n")
 		PrintMatrix(element.HMatrix)
+		fmt.Printf("      PVector: \n")
+		PrintVector(element.PVector)
 	}
 	fmt.Printf("  Width: %v\n", grid.Width)
 	fmt.Printf("  Height: %v\n", grid.Height)
@@ -69,6 +71,8 @@ func PrintGrid(grid Grid) {
 	fmt.Printf("  Number width: %v\n", grid.NumberWidth)
 	fmt.Println("  HMatrix:")
 	PrintMatrix(grid.HMatrix)
+	fmt.Println("  PVector:")
+	PrintVector(grid.PVector)
 	fmt.Println("========================================")
 }
 
@@ -89,6 +93,10 @@ func ReadFromFile(file *os.File) (Grid, GlobalData, error) {
 	}
 
 	return grid, globalData, nil
+}
+
+func PrintVector(vector *mat.VecDense) {
+	fmt.Println(mat.Formatted(vector, mat.Prefix(""), mat.Squeeze()))
 }
 
 func PrintMatrix(matrix *mat.Dense) {

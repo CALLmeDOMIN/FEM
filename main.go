@@ -24,7 +24,8 @@ func main() {
 		return
 	}
 
-	simulationGrid, _ := grid.GenerateGrid(globalDataFile, gridFile, integrationPoints)
+	simulationGrid, globalData := grid.GenerateGrid(globalDataFile, gridFile, integrationPoints)
 
-	common.PrintMatrix(simulationGrid.HMatrix)
+	common.PrintGlobalData(globalData)
+	common.PrintGrid(simulationGrid)
 }

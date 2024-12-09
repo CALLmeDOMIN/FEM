@@ -33,10 +33,12 @@ func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (
 	grid.Elements = generateShapeFunctionData(grid.Elements, grid.NumberWidth, grid.NumberHeight, integrationPoints)
 
 	for i, element := range grid.Elements {
-		grid.Elements[i].HMatrix = calculateHMatrix_local(element, nodeMap, globalData.Conductivity, globalData.Alpha, integrationPoints)
+		grid.Elements[i].HMatrix = calculateHMatrixLocal(element, nodeMap, globalData.Conductivity, globalData.Alpha, integrationPoints)
+		grid.Elements[i].PVector = calculatePVectorLocal(element, nodeMap, globalData.Alpha, globalData.AmbientTemperature, integrationPoints)
 	}
 
-	grid.HMatrix = calculateHMatrix_global(grid)
+	grid.HMatrix = calculateHMatrixGlobal(grid)
+	grid.PVector = calculatePVectorGlobal(grid)
 
 	return grid, globalData
 }

@@ -8,7 +8,7 @@ import (
 	s "mes/surface"
 )
 
-func calculateHMatrix_global(grid c.Grid) *mat.Dense {
+func calculateHMatrixGlobal(grid c.Grid) *mat.Dense {
 	H := mat.NewDense(grid.NodesNumber, grid.NodesNumber, nil)
 
 	for _, element := range grid.Elements {
@@ -24,7 +24,7 @@ func calculateHMatrix_global(grid c.Grid) *mat.Dense {
 	return H
 }
 
-func calculateHMatrix_local(element c.Element, nodeMap map[int]c.Node, conductivity float64, alpha float64, points int) *mat.Dense {
+func calculateHMatrixLocal(element c.Element, nodeMap map[int]c.Node, conductivity float64, alpha float64, points int) *mat.Dense {
 	H := mat.NewDense(len(element.NodeIDs), len(element.NodeIDs), nil)
 	weights := c.Points[points].Weights
 

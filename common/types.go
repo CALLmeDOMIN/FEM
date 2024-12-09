@@ -23,6 +23,7 @@ type Element struct {
 	DNdKsi  [][]float64
 	DNdEta  [][]float64
 	HMatrix *mat.Dense
+	PVector *mat.VecDense
 }
 
 func (e Element) GetIDs() []int {
@@ -49,6 +50,7 @@ type Grid struct {
 	NumberWidth    int     `json:"numberWidth"`
 	BCNodes        []int   `json:"bcNodes"`
 	HMatrix        *mat.Dense
+	PVector        *mat.VecDense
 }
 
 type GlobalData struct {

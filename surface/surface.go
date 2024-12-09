@@ -69,3 +69,22 @@ func (s Surface) CalculateHbcMatrix(alpha float64) *mat.Dense {
 
 	return Hbc
 }
+
+func (s Surface) CalculatePbcVector(alpha float64, ambientTemperature float64) *mat.VecDense {
+	Pbc := mat.NewVecDense(4, nil)
+
+	if !s.Nodes[0].BC || !s.Nodes[1].BC {
+		return Pbc
+	}
+
+	for i := 0; i < s.NumPoints; i++ {
+		weight := c.Points[s.NumPoints].Weights[i]
+		N := s.N[i]
+
+		PbcPc := mat.NewVecDense(4, nil)
+		PbcPc.ScaleVec(weight*alpha*ambientTemperature, N)
+		Pbc.AddVec(Pbc, PbcPc)
+	}
+
+	return Pbc
+}

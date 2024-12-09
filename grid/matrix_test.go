@@ -102,7 +102,7 @@ func TestCalculateHMatrix(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res := calculateHMatrix_local(tc.element, tc.nodeMap, conductivity, alpha, tc.points)
+			res := calculateHMatrixLocal(tc.element, tc.nodeMap, conductivity, alpha, tc.points)
 
 			if !mat.EqualApprox(res, tc.result, 1e-2) {
 				t.Errorf("Expected %v, got %v", tc.result, res)
