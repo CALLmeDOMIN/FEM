@@ -39,8 +39,6 @@
         { "id": 9, "nodes": [11, 12, 16, 15] }
     ],
     "bcNodes": [1, 2, 3, 4, 5, 8, 9, 12, 13, 14, 15, 16],
-    "height": 0.1,
-    "width": 0.1,
     "numberHeight": 3,
     "numberWidth": 3
 }

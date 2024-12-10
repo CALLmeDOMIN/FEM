@@ -4,7 +4,6 @@ import (
 	"gonum.org/v1/gonum/mat"
 
 	"mes/common"
-	"mes/integration"
 	"mes/surface"
 )
 
@@ -24,32 +23,6 @@ func calculatePVectorGlobal(grid common.Grid) *mat.VecDense {
 
 func calculatePVectorLocal(element common.Element, nodeMap map[int]common.Node, alpha float64, ambientTemperature float64, points int) *mat.VecDense {
 	P := mat.NewVecDense(len(element.NodeIDs), nil)
-	weights := common.Points[points].Weights
-
-	jacobians := integration.CalculateJacobians(element, nodeMap, points)
-	dets := integration.CalculateDetJacobians(jacobians)
-
-	for i := 0; i < points*points; i++ {
-		detJ := dets[i]
-		weightX := weights[i%points]
-		weightY := weights[i/points]
-
-		scale := alpha * detJ * weightX * weightY * ambientTemperature
-
-		for m := 0; m < 4; m++ {
-			value := element.DNdKsi[i][m] * scale
-			P.SetVec(m, P.AtVec(m)+value)
-		}
-	}
-
-	Pbc := calculatePbcVector(element, nodeMap, alpha, ambientTemperature, points)
-	P.AddVec(P, Pbc)
-
-	return P
-}
-
-func calculatePbcVector(element common.Element, nodeMap map[int]common.Node, alpha float64, ambientTemperature float64, points int) *mat.VecDense {
-	Pbc := mat.NewVecDense(len(element.NodeIDs), nil)
 	surfaces := []surface.Surface{}
 
 	for i := 0; i < 4; i++ {
@@ -88,12 +61,12 @@ func calculatePbcVector(element common.Element, nodeMap map[int]common.Node, alp
 
 	for _, surface := range surfaces {
 		detJ := surface.CalculateDetJ()
-		Pbc_surface := surface.CalculatePbcVector(alpha, ambientTemperature)
+		Pbc := surface.CalculatePbcVector(alpha, ambientTemperature)
 
-		Pbc_surface.ScaleVec(detJ, Pbc_surface)
+		Pbc.ScaleVec(detJ, Pbc)
 
-		Pbc.AddVec(Pbc, Pbc_surface)
+		P.AddVec(P, Pbc)
 	}
 
-	return Pbc
+	return P
 }
