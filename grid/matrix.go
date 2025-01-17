@@ -72,46 +72,87 @@ func calculateHbcMatrix(element c.Element, nodeMap map[int]c.Node, points int, a
 
 	for i := 0; i < 4; i++ {
 		nodes := []c.Node{nodeMap[element.NodeIDs[i]], nodeMap[element.NodeIDs[(i+1)%4]]}
-		ksi_vals := make([]float64, points)
-		eta_vals := make([]float64, points)
+		ksiVals := make([]float64, points)
+		etaVals := make([]float64, points)
 
 		if nodes[0].BC && nodes[1].BC {
 			if i%2 == 0 {
-				ksi_vals = c.Points[points].Coords
+				ksiVals = c.Points[points].Coords
 				if i == 0 {
 					for j := 0; j < points; j++ {
-						eta_vals[j] = -1
+						etaVals[j] = -1
 					}
 				} else {
 					for j := 0; j < points; j++ {
-						eta_vals[j] = 1
+						etaVals[j] = 1
 					}
 				}
 			} else {
 				if i == 1 {
 					for j := 0; j < points; j++ {
-						ksi_vals[j] = 1
+						ksiVals[j] = 1
 					}
 				} else {
 					for j := 0; j < points; j++ {
-						ksi_vals[j] = -1
+						ksiVals[j] = -1
 					}
 				}
-				eta_vals = c.Points[points].Coords
+				etaVals = c.Points[points].Coords
 			}
-			surface := s.NewSurface(i+1, nodes, points, ksi_vals, eta_vals)
+			surface := s.NewSurface(i+1, nodes, points, ksiVals, etaVals)
 			surfaces = append(surfaces, surface)
 		}
 	}
 
 	for _, surface := range surfaces {
 		detJ := surface.CalculateDetJ()
-		Hbc_surface := surface.CalculateHbcMatrix(alpha)
+		HbcSurface := surface.CalculateHbcMatrix(alpha)
 
-		Hbc_surface.Scale(detJ, Hbc_surface)
+		HbcSurface.Scale(detJ, HbcSurface)
 
-		Hbc.Add(Hbc, Hbc_surface)
+		Hbc.Add(Hbc, HbcSurface)
 	}
 
 	return Hbc
+}
+
+func calculateCMatrixGlobal(grid c.Grid) *mat.Dense {
+	C := mat.NewDense(grid.NodesNumber, grid.NodesNumber, nil)
+
+	for _, element := range grid.Elements {
+		C_local := element.CMatrix
+
+		for i, globalIDi := range element.NodeIDs {
+			for j, globalIDj := range element.NodeIDs {
+				C.Set(globalIDi-1, globalIDj-1, C.At(globalIDi-1, globalIDj-1)+C_local.At(i, j))
+			}
+		}
+	}
+
+	return C
+}
+
+func calculateCMatrixLocal(element c.Element, nodeMap map[int]c.Node, density float64, specificHeat float64, points int) *mat.Dense {
+	C := mat.NewDense(len(element.NodeIDs), len(element.NodeIDs), nil)
+	weights := c.Points[points].Weights
+
+	jacobians := i.CalculateJacobians(element, nodeMap, points)
+	dets := i.CalculateDetJacobians(jacobians)
+
+	for i := 0; i < points*points; i++ {
+		detJ := dets[i]
+		weightX := weights[i%points]
+		weightY := weights[i/points]
+
+		scale := density * specificHeat * detJ * weightX * weightY
+
+		for m := 0; m < 4; m++ {
+			for n := 0; n < 4; n++ {
+				value := element.N[i][m] * element.N[i][n] * scale
+				C.Set(m, n, C.At(m, n)+value)
+			}
+		}
+	}
+
+	return C
 }

@@ -35,28 +35,30 @@ func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (
 	for i, element := range grid.Elements {
 		grid.Elements[i].HMatrix = calculateHMatrixLocal(element, nodeMap, globalData.Conductivity, globalData.Alpha, integrationPoints)
 		grid.Elements[i].PVector = calculatePVectorLocal(element, nodeMap, globalData.Alpha, globalData.AmbientTemperature, integrationPoints)
+		grid.Elements[i].CMatrix = calculateCMatrixLocal(element, nodeMap, globalData.SpecificHeat, globalData.Density, integrationPoints)
 	}
 
 	grid.HMatrix = calculateHMatrixGlobal(grid)
 	grid.PVector = calculatePVectorGlobal(grid)
+	grid.CMatrix = calculateCMatrixGlobal(grid)
 
 	return grid, globalData
 }
 
-func generateNodes(width, height float64, numW, numH, nodesNumber int) []c.Node {
-	elementHeight := height / float64(numH)
-	elementWidth := width / float64(numW)
+func generateNodes(width, height float64, numberWidth, numberHeight, nodesNumber int) []c.Node {
+	elementHeight := height / float64(numberHeight)
+	elementWidth := width / float64(numberWidth)
 
 	nodes := make([]c.Node, nodesNumber)
 
-	for i := 0; i <= numW; i++ {
-		for j := 0; j <= numH; j++ {
+	for i := 0; i <= numberWidth; i++ {
+		for j := 0; j <= numberHeight; j++ {
 			node := c.Node{
 				X: float64(i) * elementWidth,
 				Y: float64(j) * elementHeight,
 			}
 
-			nodes[i*(numH+1)+j] = node
+			nodes[i*(numberHeight+1)+j] = node
 		}
 	}
 
@@ -87,12 +89,20 @@ func generateElements(numberWidth, numberHeight, elementsNumber int) []c.Element
 func generateShapeFunctionData(elements []c.Element, numberWidth, numberHeight, points int) []c.Element {
 	ksi := make([]float64, points*points)
 	eta := make([]float64, points*points)
+	N := make([][]float64, points*points)
 
 	for i := 0; i < points; i++ {
 		for j := 0; j < points; j++ {
 			index := i*points + j
 			ksi[index] = c.Points[points].Coords[j]
 			eta[index] = c.Points[points].Coords[i]
+
+			N[index] = []float64{
+				0.25 * (1 - ksi[index]) * (1 - eta[index]),
+				0.25 * (1 + ksi[index]) * (1 - eta[index]),
+				0.25 * (1 + ksi[index]) * (1 + eta[index]),
+				0.25 * (1 - ksi[index]) * (1 + eta[index]),
+			}
 		}
 	}
 
@@ -127,6 +137,7 @@ func generateShapeFunctionData(elements []c.Element, numberWidth, numberHeight, 
 				NodeIDs: IDs_copy,
 				Ksi:     ksi,
 				Eta:     eta,
+				N:       N,
 				DNdKsi:  dNdKsi,
 				DNdEta:  dNdEta,
 			}

@@ -3,10 +3,11 @@ package common
 import "gonum.org/v1/gonum/mat"
 
 type Node struct {
-	ID int     `json:"id"`
-	X  float64 `json:"x"`
-	Y  float64 `json:"y"`
-	BC bool
+	ID          int     `json:"id"`
+	X           float64 `json:"x"`
+	Y           float64 `json:"y"`
+	BC          bool
+	Temperature float64
 }
 
 type Geometry interface {
@@ -20,10 +21,12 @@ type Element struct {
 	NodeIDs []int `json:"nodes"`
 	Ksi     []float64
 	Eta     []float64
+	N       [][]float64
 	DNdKsi  [][]float64
 	DNdEta  [][]float64
 	HMatrix *mat.Dense
 	PVector *mat.VecDense
+	CMatrix *mat.Dense
 }
 
 func (e Element) GetIDs() []int {
@@ -51,6 +54,7 @@ type Grid struct {
 	BCNodes        []int   `json:"bcNodes"`
 	HMatrix        *mat.Dense
 	PVector        *mat.VecDense
+	CMatrix        *mat.Dense
 }
 
 type GlobalData struct {
