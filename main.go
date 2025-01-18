@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("data2.json")
+	file, err := os.Open("4x4.json")
 	if err != nil {
 		fmt.Println("Error opening file: ", err)
 		return
@@ -27,12 +27,5 @@ func main() {
 
 	simulationGrid, globalData := grid.GenerateGrid(globalDataFile, gridFile, integrationPoints)
 
-	// common.PrintGlobalData(globalData)
-	// common.PrintGrid(simulationGrid)
-
-	temperatureHistory := simulation.SimulateTemperature(simulationGrid, globalData)
-	for step, temps := range temperatureHistory {
-		fmt.Printf("Time step %d:\n", step)
-		common.PrintVector(&temps)
-	}
+	_ = simulation.SimulateTemperature(simulationGrid, globalData)
 }

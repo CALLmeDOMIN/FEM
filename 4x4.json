@@ -1,0 +1,17 @@
+{
+    "simulationTime": 500,
+    "simulationStepTime": 50,
+    "conductivity": 25,
+    "alpha": 300,
+    "ambientTemperature": 1200,
+    "initialTemperature": 100,
+    "density": 7800,
+    "specificHeat": 700,
+    "nodesNumber": 16,
+    "elementsNumber": 9,
+    "bcNodes": [1, 2, 3, 4, 5, 8, 9, 12, 13, 14, 15, 16],
+    "height": 0.1,
+    "width": 0.1,
+    "numberHeight": 3,
+    "numberWidth": 3
+}

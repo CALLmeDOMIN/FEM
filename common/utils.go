@@ -49,8 +49,8 @@ func PrintGrid(grid Grid) {
 	fmt.Printf("  Nodes number: %v\n", grid.NodesNumber)
 	fmt.Printf("  Elements number: %v\n", grid.ElementsNumber)
 	fmt.Println("  Nodes:")
-	for i, node := range grid.Nodes {
-		fmt.Printf("    Node %v: x: %v, y: %v\n", i, node.X, node.Y)
+	for _, node := range grid.Nodes {
+		fmt.Printf("    Node %v: x: %v, y: %v\n", node.ID, node.X, node.Y)
 	}
 	fmt.Println("  Elements:")
 	for i, element := range grid.Elements {

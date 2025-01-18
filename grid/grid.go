@@ -46,16 +46,18 @@ func GenerateGrid(globalData c.GlobalData, grid c.Grid, integrationPoints int) (
 }
 
 func generateNodes(width, height float64, numberWidth, numberHeight, nodesNumber int) []c.Node {
-	elementHeight := height / float64(numberHeight)
 	elementWidth := width / float64(numberWidth)
+	elementHeight := height / float64(numberHeight)
+	startY := 0.005
 
 	nodes := make([]c.Node, nodesNumber)
 
 	for i := 0; i <= numberWidth; i++ {
 		for j := 0; j <= numberHeight; j++ {
 			node := c.Node{
-				X: float64(i) * elementWidth,
-				Y: float64(j) * elementHeight,
+				ID: i*(numberHeight+1) + j + 1,
+				X:  float64(i) * elementWidth,
+				Y:  startY - float64(j)*elementHeight,
 			}
 
 			nodes[i*(numberHeight+1)+j] = node

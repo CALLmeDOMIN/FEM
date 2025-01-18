@@ -3,11 +3,10 @@ package common
 import "gonum.org/v1/gonum/mat"
 
 type Node struct {
-	ID          int     `json:"id"`
-	X           float64 `json:"x"`
-	Y           float64 `json:"y"`
-	BC          bool
-	Temperature float64
+	ID int     `json:"id"`
+	X  float64 `json:"x"`
+	Y  float64 `json:"y"`
+	BC bool
 }
 
 type Geometry interface {
